@@ -1,0 +1,8 @@
+Excepciones\PiezaIgual.class
+Excepciones\NoExisteCliente.class
+Modelo\Solicitud.class
+Excepciones\Positivos.class
+Excepciones\CamposVacios.class
+Modelo\Cliente.class
+Modelo\Pieza.class
+Controlador\Controlador.class
