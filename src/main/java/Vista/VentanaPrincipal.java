@@ -5,6 +5,8 @@ import Modelo.Solicitud;
 import Modelo.Cliente;
 import Controlador.Controlador;
 import Modelo.Pieza;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -23,8 +25,20 @@ public final class VentanaPrincipal extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         imprimirListaCliente();
         imprimirListaSolicitudes();
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    // Acción a realizar al cerrar la ventana
+                    cont.desconectarBD();
+                } catch (SQLException ex) {
+                    Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     }
 
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -170,12 +184,24 @@ public final class VentanaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_listaClientesMouseClicked
 
     private void datosPiezaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_datosPiezaActionPerformed
-        int id = obtener_id();
         try {
-            mostrarDatosPieza(cont.obtener_pieza(id),id);
+            if(cont.tabla_piezas_vacia()){
+                JOptionPane.showMessageDialog(null,"Debe Introducir al menos una pieza primero");
+            }else{
+                int id = obtener_id();
+                if(id>0){
+                    try {
+                        mostrarDatosPieza(cont.obtener_pieza(id),id);
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(null,"Asegurese de que el ID corresponda a una pieza");
+                    }
+                }
+            }
         } catch (SQLException ex) {
             Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        
     }//GEN-LAST:event_datosPiezaActionPerformed
 
     public static void main(String args[]) {
@@ -203,7 +229,7 @@ public final class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
     }
-
+    
     public void imprimirListaCliente() throws SQLException, PSQLException{
         DefaultListModel <String> modelo = new DefaultListModel<>();
         ArrayList<Cliente> clientes = cont.obtener_clientes();
@@ -224,8 +250,13 @@ public final class VentanaPrincipal extends javax.swing.JFrame {
         
     //Obtener el ID de la Pieza
     public int obtener_id()throws NumberFormatException{
-        int id = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite el id de la solicitud de la pieza que desea: ", "Datos de una pieza", 1));
-        return id;  
+        try{
+            int id = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite el id de la solicitud de la pieza que desea: ", "Datos de una pieza", 1));
+            return id;
+        } catch (NumberFormatException ex){
+            JOptionPane.showMessageDialog(null, "Introduzca un numero natural distinto de 0", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return -1;  
     }
     
     public void mostrarDatosPieza(Pieza p, int id){
@@ -235,6 +266,8 @@ public final class VentanaPrincipal extends javax.swing.JFrame {
                 + "Descripción: "+p.getDescripcion()+"\n"
                 + "Costo de la pieza: $"+p.calcularCosto(p.getPeso()), "Resultado", 1);
     }
+    
+    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu Solicitudes;

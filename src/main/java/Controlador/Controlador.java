@@ -17,17 +17,16 @@ import java.sql.Types;
 import java.util.ArrayList;
 
 public class Controlador {
-    private Connection connection;
+    private static Connection connection;
     
-    public void conectarBD() throws SQLException{
-        connection = Conexion.getConnection();
+    public void conectarBD(String USER, String PASSWORD) throws SQLException{
+        connection = Conexion.getConnection(USER,PASSWORD);
     }
     public void desconectarBD() throws SQLException{
         Conexion.closeConnection(connection);
     }
-    
+        
     public void agregar_cliente(Cliente c) throws SQLException, CamposVacios{
-        conectarBD();
         if(c.getNombre().equals("")||c.getCorreo().equals("")){
             throw new CamposVacios("Por favor rellene todos los campos y seleccione método de pago"); 
         }else{
@@ -37,13 +36,11 @@ public class Controlador {
                 cs.setString(3, c.getForma_pago());
                 cs.executeQuery();
             }
-        }
-        desconectarBD();
+        } 
     }
     
     public ArrayList<Cliente> obtener_clientes() throws SQLException{
         ArrayList<Cliente> clientes = new ArrayList<>();
-        conectarBD();
         
         ResultSet rs;
         try (CallableStatement cs = connection.prepareCall("{call obtener_clientes()}")) {
@@ -53,42 +50,31 @@ public class Controlador {
             }
         }
         rs.close();
-        desconectarBD();
         return clientes;
     }
     
-    public void verificar_cliente(String nombre) throws SQLException{
-        conectarBD();
-        try (CallableStatement cs = connection.prepareCall("{? = call verificar_cliente(?)}")) {
+    public boolean verificar_cliente(String nombre) throws SQLException{        
+        boolean llamada;
+            CallableStatement cs = connection.prepareCall("{? = call verificar_cliente(?)}");
             cs.registerOutParameter(1, Types.BOOLEAN);
-            cs.setString(2, "nombre_del_cliente");
+            cs.setString(2, nombre);
             cs.execute();
-            if(cs.getBoolean(1) == true){
-                throw new SQLException();
-            }
-                
-        }
-        
-        desconectarBD();
+            llamada = cs.getBoolean(1);
+      
+        return llamada;
     }
     
-    public void agregar_solicitud(Solicitud s) throws SQLException{
-        conectarBD();
-        
+    public void agregar_solicitud(Solicitud s) throws SQLException{        
         try (CallableStatement cs = connection.prepareCall("{call agregar_solicitud(?,?,?)}")) {
             cs.setString(1, s.getNombreClienteCorrespondiente());
             cs.setInt(2, s.getIdPiezaCorrespondiente());
             cs.setDate(3, (Date) s.getFecha());
             cs.executeQuery();
         }
-        
-        desconectarBD();
     }
     
     public ArrayList<Solicitud> obtener_solicitudes() throws SQLException{
-        ArrayList<Solicitud> solicitudes = new ArrayList<>();
-        conectarBD();
-        
+        ArrayList<Solicitud> solicitudes = new ArrayList<>();        
         ResultSet rs;
         try (CallableStatement cs = connection.prepareCall("{call obtener_solicitudes()}")) {
             rs = cs.executeQuery();
@@ -97,12 +83,10 @@ public class Controlador {
             }
         }
         rs.close();
-        desconectarBD();
         return solicitudes;
     }
     
     public void agregar_pieza(Pieza p) throws SQLException, CamposVacios, Positivos{
-        conectarBD();
         
         if(p.getDescripcion().equals("")){
             throw new CamposVacios("Por favor rellene todos los campos y seleccione método de pago");
@@ -120,12 +104,9 @@ public class Controlador {
                 cs.executeQuery();
             }   
         }
-        desconectarBD();
     }
     
     public Pieza obtener_pieza(int id) throws SQLException{
-        conectarBD();
-        
         Pieza p;
         ResultSet rs;
         try (CallableStatement cs = connection.prepareCall("{call obtener_pieza(?)}")) {
@@ -140,19 +121,30 @@ public class Controlador {
             };
         }
         rs.close();
-        desconectarBD();
         return p;
     }
     
+    public boolean tabla_piezas_vacia() throws SQLException{
+        boolean estaVacia = false;
+        try {
+            CallableStatement cs = connection.prepareCall("{? = call tabla_piezas_vacia()}");
+            cs.registerOutParameter(1, Types.BOOLEAN);
+            cs.execute();
+            estaVacia = cs.getBoolean(1);
+            cs.close();
+        } catch (SQLException e) {
+            System.out.println("Error al llamar a la función: " + e.getMessage());
+        }
+        return estaVacia;
+    }
+    
     public int obtener_ultimo_id_piezas() throws SQLException{
-        conectarBD();
         int lastId;
         try (CallableStatement cs = connection.prepareCall("{? = call obtener_ultimo_id_piezas()}")) {
             cs.registerOutParameter(1, Types.INTEGER);
             cs.execute();
             lastId = cs.getInt(1);
         }
-        desconectarBD();
         return lastId;
     }
     

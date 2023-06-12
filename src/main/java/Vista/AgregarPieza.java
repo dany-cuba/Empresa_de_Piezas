@@ -206,84 +206,67 @@ public class AgregarPieza extends javax.swing.JDialog {
         
         switch(comboBox1.getSelectedIndex()){
             case 0 -> {
-                try{
-                    
-                    try{
-                        cont.verificar_cliente(textNombreCorrespondienteCliente.getText());
-                        try{
-                            cont.agregar_pieza(new PiezaPlastica(textAreaDescrip.getText(), Double.parseDouble(textPesoPieza.getText()), Integer.parseInt(textCantidadPiezas.getText())));
-                            cont.agregar_solicitud(new Solicitud(textNombreCorrespondienteCliente.getText(),cont.obtener_ultimo_id_piezas(), java.sql.Date.valueOf(LocalDate.now())));
-                            
-                        }catch(CamposVacios e){
-                            error = true;
-                            JOptionPane.showMessageDialog(null, e.getMessage());
-                        }
-                    }
-                    catch(SQLException e){
-                        error = true;
-                        JOptionPane.showMessageDialog(null, "El nombre no corresponde a ningún cliente");
-                    }
-                }catch(Positivos p){
-                    error = true;
-                    JOptionPane.showMessageDialog(null, p.getMessage());
-                }catch(NumberFormatException e){
-                    error = true;
-                    JOptionPane.showMessageDialog(null, "Los campos de peso y cantidad de piezas deben ser números");
-                }
                 
-            }
-
-            case 1 -> {
-                try{
-                    try{
-                        cont.verificar_cliente(textNombreCorrespondienteCliente.getText());
-                        try{
-                            cont.agregar_pieza(new PiezaMetalica(textAreaDescrip.getText(), Double.parseDouble(textPesoPieza.getText()), Integer.parseInt(textCantidadPiezas.getText())));
-                            cont.agregar_solicitud(new Solicitud(textNombreCorrespondienteCliente.getText(),cont.obtener_ultimo_id_piezas(),java.sql.Date.valueOf(LocalDate.now())));
-                        }catch(CamposVacios e){
-                            error = true;
-                            JOptionPane.showMessageDialog(null, e.getMessage());
-                        } catch (SQLException ex) {
-                            Logger.getLogger(AgregarPieza.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    catch(SQLException e){
+                try {
+                    if(cont.verificar_cliente(textNombreCorrespondienteCliente.getText()) == true){
+                        cont.agregar_pieza(new PiezaPlastica(textAreaDescrip.getText(), Double.parseDouble(textPesoPieza.getText()), Integer.parseInt(textCantidadPiezas.getText())));
+                        cont.agregar_solicitud(new Solicitud(textNombreCorrespondienteCliente.getText(),cont.obtener_ultimo_id_piezas(),java.sql.Date.valueOf(LocalDate.now())));
+                    } else {
                         error = true;
                         JOptionPane.showMessageDialog(null, "El código no corresponde a ningún cliente");
-                    }
-                }catch(Positivos p){
+                    }   
+                } catch (SQLException ex) {
                     error = true;
-                    JOptionPane.showMessageDialog(null, p.getMessage());
-                }catch(NumberFormatException e){
+                    Logger.getLogger(AgregarPieza.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (CamposVacios ex) {
                     error = true;
-                    JOptionPane.showMessageDialog(null, "Los campos de peso y cantidad de piezas deben ser números");
+                    JOptionPane.showMessageDialog(null, "Por favor rellene todos los campos");
+                } catch (Positivos | NumberFormatException ex) {
+                    error = true;
+                    JOptionPane.showMessageDialog(null, "El peso y la cantidad deben ser numeros mayores que 0");
+                } 
+            }
+                
+            case 1 -> {
+                
+                try {
+                    if(cont.verificar_cliente(textNombreCorrespondienteCliente.getText()) == true){
+                        cont.agregar_pieza(new PiezaMetalica(textAreaDescrip.getText(), Double.parseDouble(textPesoPieza.getText()), Integer.parseInt(textCantidadPiezas.getText())));
+                        cont.agregar_solicitud(new Solicitud(textNombreCorrespondienteCliente.getText(),cont.obtener_ultimo_id_piezas(),java.sql.Date.valueOf(LocalDate.now())));
+                    } else {
+                        error = true;
+                        JOptionPane.showMessageDialog(null, "El código no corresponde a ningún cliente");
+                    }   
+                } catch (SQLException ex) {
+                    error = true;
+                    Logger.getLogger(AgregarPieza.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (CamposVacios ex) {
+                    error = true;
+                    JOptionPane.showMessageDialog(null, "Por favor rellene todos los campos");
+                } catch (Positivos  | NumberFormatException ex) {
+                    error = true;
+                    JOptionPane.showMessageDialog(null, "El peso y la cantidad deben ser numeros mayores que 0");
                 }
             }
 
             case 2 -> {
-                try{
-                    try{
-                        cont.verificar_cliente(textNombreCorrespondienteCliente.getText());
-                        try{
-                            cont.agregar_pieza(new PiezaMixta(textAreaDescrip.getText(), Double.parseDouble(textPesoPieza.getText()), Integer.parseInt(textCantidadPiezas.getText())));
-                            cont.agregar_solicitud(new Solicitud(textNombreCorrespondienteCliente.getText(),cont.obtener_ultimo_id_piezas(),java.sql.Date.valueOf(LocalDate.now())));
-                        }catch(CamposVacios e){
-                            error = true;
-                            JOptionPane.showMessageDialog(null, e.getMessage());
-                        } catch (SQLException ex) {
-                            Logger.getLogger(AgregarPieza.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    catch(SQLException e){
+                try {
+                    if(cont.verificar_cliente(textNombreCorrespondienteCliente.getText()) == true){
+                        cont.agregar_pieza(new PiezaMixta(textAreaDescrip.getText(), Double.parseDouble(textPesoPieza.getText()), Integer.parseInt(textCantidadPiezas.getText())));
+                        cont.agregar_solicitud(new Solicitud(textNombreCorrespondienteCliente.getText(),cont.obtener_ultimo_id_piezas(),java.sql.Date.valueOf(LocalDate.now())));
+                    } else {
                         error = true;
                         JOptionPane.showMessageDialog(null, "El código no corresponde a ningún cliente");
-                    }
-                }catch(Positivos p){
+                    }   
+                } catch (SQLException ex) {
                     error = true;
-                    JOptionPane.showMessageDialog(null, p.getMessage());
-                }catch(NumberFormatException e){
+                    Logger.getLogger(AgregarPieza.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (CamposVacios ex) {
                     error = true;
-                    JOptionPane.showMessageDialog(null, "Los campos de peso y cantidad de piezas deben ser números");
+                    JOptionPane.showMessageDialog(null, "Por favor rellene todos los campos");
+                } catch (Positivos | NumberFormatException ex) {
+                    error = true;
+                    JOptionPane.showMessageDialog(null, "El peso y la cantidad deben ser numeros mayores que 0");
                 }
             }
         }        

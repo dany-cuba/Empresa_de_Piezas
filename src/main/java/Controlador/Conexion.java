@@ -7,10 +7,8 @@ import java.sql.SQLException;
 public class Conexion {
     
     private static final String URL = "jdbc:postgresql://localhost/encargos";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "uclv.123";
     
-    public static Connection getConnection() throws SQLException {
+    public static Connection getConnection(String USER, String PASSWORD) throws SQLException {
         Connection conn = null;
         try {
             Class.forName("org.postgresql.Driver");
@@ -33,6 +31,8 @@ public class Conexion {
             } catch (SQLException ex) {
                 System.out.println("Error al cerrar la conexión: " + ex.getMessage());
             }
+        }else{
+            System.out.println("objeto conexion vacio");
         }
     }
 }
